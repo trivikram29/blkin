@@ -74,7 +74,7 @@ int blkin_init()
 }
 
 int blkin_init_new_trace(struct blkin_trace *new_trace, const char *service,
-			 const struct blkin_endpoint *endpoint)
+			 const struct blkin_endpoint *endpoint, const int64_t request_id)
 {
 	int res;
 	if (!new_trace) {
@@ -82,6 +82,7 @@ int blkin_init_new_trace(struct blkin_trace *new_trace, const char *service,
 		goto OUT;
 	}
 	new_trace->name = service;
+        new_trace->info.request_id = request_id;
 	new_trace->info.trace_id = random_big();
 	new_trace->info.span_id = random_big();
 	new_trace->info.parent_span_id = 0;
@@ -105,6 +106,7 @@ int blkin_init_child_info(struct blkin_trace *child,
 	child->info.trace_id = parent_info->trace_id;
 	child->info.span_id = random_big();
 	child->info.parent_span_id = parent_info->span_id;
+        child->info.request_id = parent_info->request_id;
 	child->name = child_name;
 	child->endpoint = endpoint;
 	res = 0;
@@ -231,7 +233,7 @@ int blkin_record(const struct blkin_trace *trace,
 		}
 		tracepoint(zipkin, keyval_string, trace->name,
 			   endpoint->name, endpoint->port, endpoint->ip,
-			   trace->info.trace_id, trace->info.span_id,
+			   trace->info.request_id, trace->info.trace_id, trace->info.span_id,
 			   trace->info.parent_span_id,
 			   annotation->key, annotation->val_str);
 	}
@@ -242,7 +244,7 @@ int blkin_record(const struct blkin_trace *trace,
 		}
 		tracepoint(zipkin, keyval_integer, trace->name,
 			   endpoint->name, endpoint->port, endpoint->ip,
-			   trace->info.trace_id, trace->info.span_id,
+			   trace->info.request_id, trace->info.trace_id, trace->info.span_id,
 			   trace->info.parent_span_id,
 			   annotation->key, annotation->val_int);
 	}
@@ -253,9 +255,10 @@ int blkin_record(const struct blkin_trace *trace,
 		}
 		tracepoint(zipkin, timestamp , trace->name,
 			   endpoint->name, endpoint->port, endpoint->ip,
-			   trace->info.trace_id, trace->info.span_id,
+			   trace->info.request_id, trace->info.trace_id, trace->info.span_id,
 			   trace->info.parent_span_id,
 			   annotation->val_str);
+
 	}
 	res = 0;
 OUT:

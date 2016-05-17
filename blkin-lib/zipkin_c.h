@@ -74,6 +74,7 @@ struct blkin_trace_info {
     int64_t trace_id;
     int64_t span_id;
     int64_t parent_span_id;
+    int64_t request_id;
 };
 
 /**
@@ -87,6 +88,7 @@ struct blkin_trace_info_packed {
 	__be64 trace_id;
 	__be64 span_id;
 	__be64 parent_span_id;
+    __be64 request_id;
 } __attribute__((packed));
 
 
@@ -144,7 +146,7 @@ int blkin_init();
  * @returns 0 on success or negative error code
  */
 int blkin_init_new_trace(struct blkin_trace *new_trace, const char *name,
-			 const struct blkin_endpoint *endpoint);
+			 const struct blkin_endpoint *endpoint, const int64_t request_id);
 
 /**
  * Initialize a blkin_trace as a child of the given parent

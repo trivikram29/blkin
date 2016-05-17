@@ -100,11 +100,11 @@ void process_a()
     }
 
     printf("Connected.\n");
-    
+    int64_t request_id = 121212; 
     for (i=0;i<10;i++) {
 
         /*create trace*/
-        blkin_init_new_trace(&trace, "process a", &endp);
+        blkin_init_new_trace(&trace, "process a", &endp, request_id);
 
         blkin_init_timestamp_annotation(&ant, "start", &endp);
         blkin_record(&trace, &ant);

@@ -117,28 +117,29 @@ namespace ZTracer {
 		info.trace_id = 0;
 		info.span_id = 0;
 		info.parent_span_id = 0;
+                info.request_id = 0;
 		endpoint = NULL;
 	    }
 
 	// construct a Trace with an optional parent
-	Trace(const char *name, const Endpoint *ep, const Trace *parent = NULL)
+	Trace(const char *name, const Endpoint *ep, const Trace *parent = NULL, const int64_t request_id = -1)
 	    {
 		if (parent && parent->valid()) {
 		    blkin_init_child(this, parent, ep ? : parent->endpoint,
 				     name);
 		} else {
-		    blkin_init_new_trace(this, name, ep);
+                    blkin_init_new_trace(this, name, ep, request_id);
 		}
 	    }
 
 	// construct a Trace from blkin_trace_info
 	Trace(const char *name, const Endpoint *ep,
-	      const blkin_trace_info *i, bool child=false)
+	      const blkin_trace_info *i, bool child=false, const int64_t request_id = -1)
 	    {
 		if (child)
 		    blkin_init_child_info(this, i, ep, name);
 		else {
-		    blkin_init_new_trace(this, name, ep);
+		    blkin_init_new_trace(this, name, ep, request_id);
 		    set_info(i);
 		}
 	    }
@@ -165,23 +166,23 @@ namespace ZTracer {
 
 	// (re)initialize a Trace with an optional parent
 	int init(const char *name, const Endpoint *ep,
-		 const Trace *parent = NULL)
+		 const Trace *parent = NULL, const int64_t request_id = -1)
 	    {
 		if (parent && parent->valid())
 		    return blkin_init_child(this, parent,
 					    ep ? : parent->endpoint, name);
 
-		return blkin_init_new_trace(this, name, ep);
+		return blkin_init_new_trace(this, name, ep, request_id);
 	    }
 
 	// (re)initialize a Trace from blkin_trace_info
 	int init(const char *name, const Endpoint *ep,
-		 const blkin_trace_info *i, bool child=false)
+		 const blkin_trace_info *i, bool child=false, const int64_t request_id = -1)
 	    {
 		if (child)
 		    return blkin_init_child_info(this, i, ep, _name.c_str());
 
-		int r = blkin_init_new_trace(this, _name.c_str(), ep);
+		int r = blkin_init_new_trace(this, _name.c_str(), ep, request_id);
 		if (r == 0)
 		    set_info(i);
 		return r;

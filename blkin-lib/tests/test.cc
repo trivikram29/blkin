@@ -47,6 +47,7 @@ struct message {
 class Parent {
 	private:
 		int s, s2;
+                int64_t request_id = 333333;
 		ZTracer::Endpoint e;
 	public:
 		Parent() : e("0.0.0.0", 1, "parent")
@@ -70,7 +71,7 @@ class Parent {
 			
 			for (int i=0;i<10;i++) {
 				/*Init trace*/
-        ZTracer::Trace tr("parent process", &e);
+        ZTracer::Trace tr("parent process", &e, NULL, request_id);
 
 				process(tr);
 				

@@ -17,7 +17,7 @@ TRACEPOINT_EVENT(
 	zipkin,
 	keyval_string,
 	TP_ARGS(const char *, trace_name, const char *, service,
-		int, port, const char *, ip, long, trace,
+		int, port, const char *, ip, long, r_id, long, trace,
 		long, span, long, parent_span,
 		const char *, key, const char *, val ),
 
@@ -38,6 +38,7 @@ TRACEPOINT_EVENT(
 		 * According to the tracing semantics each trace should have
 		 * a trace id, a span id and a parent span id
 		 */
+                ctf_integer(long, request_id, r_id)
 		ctf_integer(long, trace_id, trace)
 		ctf_integer(long, span_id, span)
 		ctf_integer(long, parent_span_id, parent_span)
@@ -61,7 +62,7 @@ TRACEPOINT_EVENT(
 	zipkin,
 	keyval_integer,
 	TP_ARGS(const char *, trace_name, const char *, service,
-		int, port, const char *, ip, long, trace,
+		int, port, const char *, ip, long, r_id, long, trace,
 		long, span, long, parent_span,
 		const char *, key, int64_t, val ),
 
@@ -82,6 +83,7 @@ TRACEPOINT_EVENT(
 		 * According to the tracing semantics each trace should have
 		 * a trace id, a span id and a parent span id
 		 */
+                ctf_integer(long, request_id, r_id)
 		ctf_integer(long, trace_id, trace)
 		ctf_integer(long, span_id, span)
 		ctf_integer(long, parent_span_id, parent_span)
@@ -105,7 +107,7 @@ TRACEPOINT_EVENT(
 	zipkin,
 	timestamp,
 	TP_ARGS(const char *, trace_name, const char *, service,
-		int, port, const char *, ip, long, trace,
+		int, port, const char *, ip, long, r_id, long, trace,
 		long, span, long, parent_span,
 		const char *, event),
 
@@ -114,6 +116,7 @@ TRACEPOINT_EVENT(
 		ctf_string(service_name, service)
 		ctf_integer(int, port_no, port)
 		ctf_string(ip, ip)
+                ctf_integer(long, request_id, r_id)
 		ctf_integer(long, trace_id, trace)
 		ctf_integer(long, span_id, span)
 		ctf_integer(long, parent_span_id, parent_span)
@@ -124,6 +127,32 @@ TRACEPOINT_LOGLEVEL(
 	zipkin,
 	timestamp,
 	TRACE_WARNING)
+
+TRACEPOINT_EVENT(
+	zipkin,
+	timestamp_request_id,
+	TP_ARGS(const char *, trace_name, const char *, service,
+		int, port, const char *, ip, long, r_id, long, trace,
+		long, span, long, parent_span,
+		const char *, event),
+
+	TP_FIELDS(
+		ctf_string(trace_name, trace_name)
+		ctf_string(service_name, service)
+		ctf_integer(int, port_no, port)
+		ctf_string(ip, ip)
+        ctf_integer(long, request_id, r_id)
+		ctf_integer(long, trace_id, trace)
+		ctf_integer(long, span_id, span)
+		ctf_integer(long, parent_span_id, parent_span)
+		ctf_string(event, event)
+		)
+	)
+TRACEPOINT_LOGLEVEL(
+	zipkin,
+	timestamp_request_id,
+	TRACE_WARNING)
+
 #endif /* _ZIPKIN_H */
 
 #include <lttng/tracepoint-event.h>
